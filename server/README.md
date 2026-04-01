@@ -1,4 +1,4 @@
-# HotelHub Backend
+# Hotel-SaaS Backend
 
 Multi-tenant hotel property management and booking backend built with Node.js, Express, and MongoDB.
 
@@ -6,7 +6,7 @@ This API is designed around real hotel operations: onboarding hotels, assigning 
 
 ## Overview
 
-HotelHub Backend is a modular Express application for hotel SaaS operations. Each hotel is treated as a separate tenant, and protected resources are scoped through the `x-hotel-id` header after authentication.
+Hotel-SaaS Backend is a modular Express application for hotel SaaS operations. Each hotel is treated as a separate tenant, and protected resources are scoped through the `x-hotel-id` header after authentication.
 
 The codebase is organized by domain modules so each feature can keep its own controller, service, routes, validation, and model files while shared concerns live in common infrastructure folders.
 
@@ -162,7 +162,7 @@ PORT=5001
 MONGO_URI=mongodb://127.0.0.1:27017/hotelhub
 CLIENT_URL=http://localhost:5173
 JWT_ACCESS_SECRET=your_super_secret_key
-JWT_ACCESS_EXPIRES=15m
+JWT_ACCESS_EXPIRES=2d
 ```
 
 ### Variable Reference

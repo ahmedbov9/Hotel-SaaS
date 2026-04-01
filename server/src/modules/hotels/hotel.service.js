@@ -55,7 +55,57 @@ async function getCurrentHotel(hotelId) {
   return hotel;
 }
 
+async function getMyHotels(userId) {
+  const hotels = await Hotel.find({
+    ownerUserId: userId,
+  }).sort("createdAt");
+
+  if (hotels.length === 0) {
+    // check if user is a member of any hotels
+    const memberships = await Membership.find({ userId });
+
+    if (memberships.length === 0) {
+      return [];
+    }
+
+    const hotelIds = memberships.map((m) => m.hotelId);
+    const memberHotels = await Hotel.find({ _id: { $in: hotelIds } }).sort(
+      "createdAt",
+    );
+
+    return memberHotels.map((hotel) => {
+      const membership = memberships.find(
+        (m) => String(m.hotelId) === String(hotel._id),
+      );
+
+      return {
+        hotel,
+        membership: membership || null,
+      };
+    });
+  }
+
+  const memberships = await Membership.find({
+    userId,
+    hotelId: { $in: hotels.map((hotel) => hotel._id) },
+  });
+
+  const items = hotels.map((hotel) => {
+    const membership = memberships.find(
+      (item) => String(item.hotelId) === String(hotel._id),
+    );
+
+    return {
+      hotel,
+      membership: membership || null,
+    };
+  });
+
+  return items;
+}
+
 module.exports = {
   createHotel,
   getCurrentHotel,
+  getMyHotels,
 };

@@ -36,3 +36,18 @@ exports.getCurrent = asyncHandler(async (req, res) => {
     },
   });
 });
+
+
+/**
+ * @desc    Get my hotel
+ * @route   GET /api/hotels/my-hotels
+ * @headers Authorization: Bearer <token>
+ * @access  Private
+ */
+exports.getMyHotels = asyncHandler(async (req, res) => {
+  const result = await hotelService.getMyHotels(req.user.id);
+  res.status(200).json({
+    success: true,
+    data: result
+  });
+});

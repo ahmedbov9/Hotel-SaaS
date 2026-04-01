@@ -1,0 +1,16 @@
+
+#Backend
+server/.env
+server/.env.*
+server/!.env.example
+server/node_modules
+server/.vscode
+
+
+#Frontend
+client/.env
+client/.env.*
+client/!.env.example
+client/node_modules
+client/.vscode
+client/build

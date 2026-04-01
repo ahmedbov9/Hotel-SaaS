@@ -1,10 +1,9 @@
 const Guest = require("./guest.model");
 const AppError = require("../../common/errors/AppError");
 const {
-  normalizeDate,
   ensureUniqueIdentity,
 } = require("./guest.utils");
-const  {normalizeNullableString}  = require("../../common/utils/utils");
+const  {normalizeNullableString, normalizeDate}  = require("../../common/utils/utils");
 async function createGuest(hotelId, payload) {
   const idType = normalizeNullableString(payload.idType);
   const idNumber = normalizeNullableString(payload.idNumber);

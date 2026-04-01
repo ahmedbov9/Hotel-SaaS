@@ -23,4 +23,13 @@ router.post("/", auth, validate(createHotelSchema), controller.create);
 
 router.get("/current", auth, requireHotelAccess, controller.getCurrent);
 
+/**
+ * @desc    Get my hotels
+ * @route   GET /api/hotels/my-hotels
+ * @headers Authorization: Bearer <token>
+ * @access  Private
+ */
+router.get("/my-hotels", auth, controller.getMyHotels);
+
+
 module.exports = router;

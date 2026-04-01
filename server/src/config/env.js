@@ -9,7 +9,7 @@ const env = {
   JWT_ACCESS_EXPIRES:
     process.env.NODE_ENV === "development"
       ? "7d"
-      : process.env.JWT_ACCESS_EXPIRES || "15m",
+      : process.env.JWT_ACCESS_EXPIRES || "2d",
 };
 
 module.exports = { env };
