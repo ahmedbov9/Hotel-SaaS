@@ -160,7 +160,7 @@ Create a `.env` file in the project root.
 NODE_ENV=development
 PORT=5001
 MONGO_URI=mongodb://127.0.0.1:27017/hotelhub
-CLIENT_URL=http://localhost:5173
+CLIENT_URL=https://hotelsaaspms.netlify.app
 JWT_ACCESS_SECRET=your_super_secret_key
 JWT_ACCESS_EXPIRES=2d
 ```
