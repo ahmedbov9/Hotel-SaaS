@@ -24,7 +24,7 @@ export function HotelSwitcher() {
 if(availableHotels.length <= 1 && hotel){
     return (
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <p className="text-sm font-semibold text-slate-900">Current Hotel Context</p>
+        <p className="text-sm font-semibold text-slate-900">Current Hotel</p>
 
         <p className="mt-2 text-sm text-slate-600">
           {hotel ? `${hotel.name} (${hotel.slug})` : "No hotel selected"}
@@ -45,7 +45,10 @@ if(availableHotels.length <= 1 && hotel){
       <div className="mt-4 flex flex-col gap-3 sm:flex-row">
         <select
           value={value}
-          onChange={(event) => setValue(event.target.value)}
+          onChange={(event) => {
+            setValue(event.target.value);
+            handleApply();
+          }}
           className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-slate-900"
         >
 
@@ -56,13 +59,7 @@ if(availableHotels.length <= 1 && hotel){
           ))}
         </select>
 
-        <button
-          onClick={handleApply}
-          disabled={isLoading}
-          className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white disabled:opacity-60"
-        >
-          Apply
-        </button>
+
       </div>
 
       {error ? (
