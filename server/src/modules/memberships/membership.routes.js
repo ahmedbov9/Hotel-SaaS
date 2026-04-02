@@ -9,7 +9,7 @@ const {
   updateMembershipSchema,
 } = require("./membership.validation");
 
-router.use(auth, requireHotelAccess);
+router.use(auth.verifyToken, requireHotelAccess);
 
 
 

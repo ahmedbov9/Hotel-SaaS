@@ -12,7 +12,7 @@ const { createHotelSchema } = require("./hotel.validation");
  * @access  Private
  */
 
-router.post("/", auth, validate(createHotelSchema), controller.create);
+router.post("/", auth.verifyToken  ,validate(createHotelSchema), controller.create);
 
 /**
  * @desc    Get current hotel details
@@ -21,7 +21,7 @@ router.post("/", auth, validate(createHotelSchema), controller.create);
  * @access  Private
  */
 
-router.get("/current", auth, requireHotelAccess, controller.getCurrent);
+router.get("/current", auth.verifyToken, requireHotelAccess, controller.getCurrent);
 
 /**
  * @desc    Get my hotels
@@ -29,7 +29,7 @@ router.get("/current", auth, requireHotelAccess, controller.getCurrent);
  * @headers Authorization: Bearer <token>
  * @access  Private
  */
-router.get("/my-hotels", auth, controller.getMyHotels);
+router.get("/my-hotels", auth.verifyToken, controller.getMyHotels);
 
 
 module.exports = router;

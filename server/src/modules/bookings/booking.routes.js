@@ -10,7 +10,7 @@ const {
   cancelBookingSchema,
 } = require("./booking.validation");
 
-router.use(auth, requireHotelAccess);
+router.use(auth.verifyToken, requireHotelAccess);
 
 /**
  * @desc    Create a new booking

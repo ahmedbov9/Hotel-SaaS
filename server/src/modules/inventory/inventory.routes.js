@@ -9,7 +9,7 @@ const {
   getInventoryRangeSchema,
 } = require("./inventory.validation");
 
-router.use(auth, requireHotelAccess);
+router.use(auth.verifyToken, requireHotelAccess);
 
 
 
@@ -30,7 +30,7 @@ router.get(
 
 /**
  * @desc    Bulk upsert inventory items
- * @route   PUT /api/inventory/Bulk
+ * @route   PUT /api/inventory/bulk
  * @headers Authorization: Bearer <token> && x-hotel-id: <hotelId>
  * @access  Private
  */

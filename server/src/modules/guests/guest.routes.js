@@ -6,7 +6,7 @@ const validate = require("../../common/middlewares/validate.middleware");
 const controller = require("./guest.controller");
 const { createGuestSchema, updateGuestSchema } = require("./guest.validation");
 
-router.use(auth, requireHotelAccess);
+router.use(auth.verifyToken, requireHotelAccess);
 
 /**
  * @desc    List all guests

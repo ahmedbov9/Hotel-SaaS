@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   cancelBooking,
   checkInBooking,
@@ -23,9 +23,11 @@ import { useHotel } from "@/hooks/use-hotel";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { usePermissions } from "@/hooks/use-permissions";
 
+
 export function BookingsPageContent() {
   const { hotelId } = useHotel();
   const { confirm } = useConfirmDialog();
+  const { can } = usePermissions();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
@@ -33,13 +35,32 @@ export function BookingsPageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const { can } = usePermissions();
-  async function loadData() {
+  const [bookingFormError, setBookingFormError] = useState("");
+
+  const canReadBookings = can("bookings.read");
+  const canCreateBookings = can("bookings.create");
+  const canReadGuests = can("guests.read");
+  const canReadRooms = can("rooms.read");
+  const canLoadBookingFormData =
+    canCreateBookings && canReadGuests && canReadRooms;
+
+  const loadData = useCallback(async () => {
     if (!hotelId) {
       setBookings([]);
       setGuests([]);
       setRoomTypes([]);
       setRooms([]);
+      setBookingFormError("");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!canReadBookings) {
+      setBookings([]);
+      setGuests([]);
+      setRoomTypes([]);
+      setRooms([]);
+      setBookingFormError("");
       setIsLoading(false);
       return;
     }
@@ -47,29 +68,51 @@ export function BookingsPageContent() {
     try {
       setIsLoading(true);
       setError("");
+      setBookingFormError("");
 
-      const [bookingsResult, guestsResult, roomTypesResult, roomsResult] =
-        await Promise.all([
-          getBookings(),
-          getGuests(),
-          getRoomTypes(),
-          getRooms(),
-        ]);
-
+      const bookingsResult = await getBookings();
       setBookings(bookingsResult);
-      setGuests(guestsResult);
-      setRoomTypes(roomTypesResult);
-      setRooms(roomsResult);
+
+      if (!canLoadBookingFormData) {
+        setGuests([]);
+        setRoomTypes([]);
+        setRooms([]);
+        return;
+      }
+
+      const [guestsResult, roomTypesResult, roomsResult] = await Promise.allSettled([
+        getGuests(),
+        getRoomTypes(),
+        getRooms(),
+      ]);
+
+      setGuests(guestsResult.status === "fulfilled" ? guestsResult.value : []);
+      setRoomTypes(
+        roomTypesResult.status === "fulfilled" ? roomTypesResult.value : [],
+      );
+      setRooms(roomsResult.status === "fulfilled" ? roomsResult.value : []);
+
+      if (
+        guestsResult.status === "rejected" ||
+        roomTypesResult.status === "rejected" ||
+        roomsResult.status === "rejected"
+      ) {
+        setBookingFormError(
+          "Bookings loaded, but guest and room data could not be loaded for the create form.",
+        );
+      }
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [hotelId, canReadBookings, canLoadBookingFormData]);
+
 
   useEffect(() => {
     void loadData();
-  }, [hotelId]);
+
+  }, [loadData]);
 
   function showSuccess(message: string) {
     setSuccessMessage(message);
@@ -146,6 +189,14 @@ export function BookingsPageContent() {
     );
   }
 
+  if (!canReadBookings) {
+    return (
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
+        You do not have permission to view bookings.
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {successMessage ? (
@@ -153,7 +204,7 @@ export function BookingsPageContent() {
           {successMessage}
         </div>
       ) : null}
-      {can("booking.create") ? (
+      {canLoadBookingFormData && !bookingFormError ? (
         <BookingForm
           guests={guests}
           roomTypes={roomTypes}
@@ -162,7 +213,11 @@ export function BookingsPageContent() {
         />
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-500 shadow-sm">
-          You do not have permission to create bookings.
+          {!canCreateBookings
+            ? "You do not have permission to create bookings."
+            : !canReadGuests || !canReadRooms
+              ? "You need guest and room read permissions to create bookings."
+              : bookingFormError}
         </div>
       )}
 

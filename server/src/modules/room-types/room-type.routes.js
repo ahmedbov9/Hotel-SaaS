@@ -9,7 +9,7 @@ const {
   updateRoomTypeSchema,
 } = require("./room-type.validation");
 
-router.use(auth, requireHotelAccess);
+router.use(auth.verifyToken, requireHotelAccess);
 
 /**
  * @desc    List all room types

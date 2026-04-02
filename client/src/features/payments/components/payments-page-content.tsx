@@ -85,7 +85,7 @@ export function PaymentsPageContent() {
         </div>
       ) : null}
 
-      {can('payment.create') ? <PaymentForm bookings={bookings} onSubmit={handleCreate} /> : <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-500 shadow-sm">
+      {can('payments.create') ? <PaymentForm bookings={bookings} onSubmit={handleCreate} /> : <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-500 shadow-sm">
         You do not have permission to create payments.
       </div>}
 

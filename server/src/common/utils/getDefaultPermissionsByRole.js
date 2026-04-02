@@ -35,6 +35,7 @@ function getDefaultPermissionsByRole(role) {
         "bookings.checkin",
         "payments.read",
         "payments.create",
+        "reports.read",
       ];
     case "accountant":
       return [

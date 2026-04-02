@@ -9,6 +9,8 @@ async function createHotel(ownerUserId, payload) {
   let slug = baseSlug;
   let counter = 1;
 
+
+
   while (await Hotel.findOne({ slug })) {
     slug = `${baseSlug}-${counter++}`;
   }
