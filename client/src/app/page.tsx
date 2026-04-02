@@ -4,12 +4,9 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-white text-slate-900">
       <section className="mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-6 text-center">
-        <p className="mb-3 text-sm font-medium text-slate-500">
-          Hotel SaaS PMS
-        </p>
 
         <h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl">
-          Frontend foundation is ready
+         Hotel SaaS PMS System
         </h1>
 
         <p className="max-w-2xl text-base text-slate-600 sm:text-lg">
