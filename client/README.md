@@ -499,7 +499,7 @@ If this frontend were pushed further toward production, the next steps would inc
 
 ## Author
 
-Built by Ahmed Alfeifi.
+Built by Ahmed Alfaifi.
 
 ---
 
