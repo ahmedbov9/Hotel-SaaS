@@ -9,7 +9,7 @@ const {
   updateInvoiceStatusSchema,
 } = require("./invoice.validation");
 
-router.use(auth, requireHotelAccess);
+router.use(auth.verifyToken, requireHotelAccess);
 
 /**
  * @desc    List all invoices

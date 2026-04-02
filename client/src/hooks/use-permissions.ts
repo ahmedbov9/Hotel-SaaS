@@ -7,7 +7,6 @@ export function usePermissions() {
   const { membership } = useHotel();
 
   const permissions = membership?.permissions ?? [];
-
   function can(permission: string) {
     return hasPermission(permissions, permission);
   }

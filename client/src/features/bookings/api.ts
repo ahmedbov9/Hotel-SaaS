@@ -2,7 +2,7 @@ import { api } from "@/lib/api/client";
 import type { Booking, CreateBookingPayload } from "@/types/booking";
 
 export async function getBookings() {
-  return api.get<Booking[]>("/bookings");
+  return await api.get<Booking[]>("/bookings");
 }
 
 export async function createBooking(payload: CreateBookingPayload) {

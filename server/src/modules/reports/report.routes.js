@@ -4,7 +4,7 @@ const requireHotelAccess = require("../../common/middlewares/requireHotelAccess.
 const requirePermission = require("../../common/middlewares/requirePermission.middleware");
 const controller = require("./report.controller");
 
-router.use(auth, requireHotelAccess);
+router.use(auth.verifyToken, requireHotelAccess);
 /**
  * @desc    Get dashboard summary
  * @route   GET /api/reports/dashboard

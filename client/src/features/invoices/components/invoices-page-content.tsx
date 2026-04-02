@@ -100,7 +100,7 @@ export function InvoicesPageContent() {
         </div>
       ) : null}
 
-      {can("invoice.create") ? (
+      {can("payments.create") ? (
         <InvoiceForm bookings={bookings} onSubmit={handleCreate} />
       ) : (
         <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-500 shadow-sm">

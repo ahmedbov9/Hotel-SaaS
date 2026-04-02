@@ -3,6 +3,7 @@ const validate = require("../../common/middlewares/validate.middleware");
 const auth = require("../../common/middlewares/auth.middleware");
 const controller = require("./auth.controller");
 const { registerSchema, loginSchema } = require("./auth.validation");
+const { PLATFORM_ROLES } = require("../../config/constants");
 
 
 /**
@@ -24,6 +25,6 @@ router.post("/login", validate(loginSchema), controller.login);
  * @route   GET /api/auth/me
  * @access  Private
  */
-router.get("/me", auth, controller.getMe);
+router.get("/me", auth.verifyToken, controller.getMe);
 
 module.exports = router;

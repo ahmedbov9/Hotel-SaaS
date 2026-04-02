@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: Object.values(PLATFORM_ROLES),
-      default: PLATFORM_ROLES.HOTEL_STAFF,
+      default: PLATFORM_ROLES.HOTEL_OWNER,
     },
     isActive: {
       type: Boolean,

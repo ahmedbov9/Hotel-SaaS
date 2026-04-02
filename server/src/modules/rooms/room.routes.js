@@ -9,7 +9,7 @@ const {
   updateRoomSchema,
 } = require("./room.validation");
 
-router.use(auth, requireHotelAccess);
+router.use(auth.verifyToken, requireHotelAccess);
 
 
 

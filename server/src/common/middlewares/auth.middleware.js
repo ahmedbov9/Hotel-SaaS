@@ -3,7 +3,7 @@ const { env } = require("../../config/env");
 const AppError = require("../errors/AppError");
 const User = require("../../modules/users/user.model");
 
-module.exports = async function verifyToken(req, res, next) {
+exports.verifyToken = async function verifyToken(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
 
@@ -32,7 +32,19 @@ module.exports = async function verifyToken(req, res, next) {
 
     next();
   } catch (error) {
-
     next(new AppError("Invalid or expired token", 401));
   }
+};
+
+exports.allowedRoles =  function allowedRoles(...roles) {
+  return (req, res, next) => {
+    if (!req.user) return next(new AppError("Unauthorized", 401));
+
+    if (!roles.includes(req.user.role)) {
+      return next(new AppError("Forbidden", 403));
+    }
+
+
+    next();
+  };
 };

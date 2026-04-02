@@ -6,7 +6,7 @@ const validate = require("../../common/middlewares/validate.middleware");
 const controller = require("./payment.controller");
 const { createPaymentSchema } = require("./payment.validation");
 
-router.use(auth, requireHotelAccess);
+router.use(auth.verifyToken, requireHotelAccess);
 
 /**
  * @desc    List all payments
