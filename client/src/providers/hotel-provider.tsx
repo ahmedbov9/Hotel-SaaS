@@ -5,7 +5,9 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
+  type ReactNode,
 } from "react";
 import { getCurrentHotel, getMyHotels } from "@/features/hotels/api";
 import {
@@ -23,6 +25,7 @@ type HotelContextValue = {
   hotelId: string | null;
   availableHotels: AccessibleHotel[];
   isLoading: boolean;
+  isBootstrapped: boolean;
   setHotelId: (hotelId: string | null) => Promise<void>;
   refreshHotel: () => Promise<void>;
   clearHotel: () => void;
@@ -31,7 +34,7 @@ type HotelContextValue = {
 export const HotelContext = createContext<HotelContextValue | null>(null);
 
 type HotelProviderProps = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export function HotelProvider({ children }: HotelProviderProps) {
@@ -42,6 +45,9 @@ export function HotelProvider({ children }: HotelProviderProps) {
   const [hotelId, setHotelIdState] = useState<string | null>(null);
   const [availableHotels, setAvailableHotels] = useState<AccessibleHotel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isBootstrapped, setIsBootstrapped] = useState(false);
+
+  const activeRequestIdRef = useRef(0);
 
   const clearHotel = useCallback(() => {
     removeCurrentHotelId();
@@ -49,9 +55,24 @@ export function HotelProvider({ children }: HotelProviderProps) {
     setMembership(null);
     setHotelIdState(null);
     setAvailableHotels([]);
+    setIsBootstrapped(true);
+  }, []);
+
+  const loadCurrentHotel = useCallback(async (requestId: number) => {
+    const current = await getCurrentHotel();
+
+    if (requestId !== activeRequestIdRef.current) return false;
+
+    setHotel(current.hotel);
+    setMembership(current.membership);
+    return true;
   }, []);
 
   const refreshHotel = useCallback(async () => {
+    if (isAuthLoading) return;
+
+    const requestId = ++activeRequestIdRef.current;
+
     if (!isAuthenticated) {
       clearHotel();
       setIsLoading(false);
@@ -62,52 +83,93 @@ export function HotelProvider({ children }: HotelProviderProps) {
       setIsLoading(true);
 
       const myHotels = await getMyHotels();
+
+      if (requestId !== activeRequestIdRef.current) return;
+
       setAvailableHotels(myHotels);
 
       let storedHotelId = getCurrentHotelId();
 
-      if (!storedHotelId && myHotels.length > 0) {
-        storedHotelId = myHotels[0].hotel._id;
-        setCurrentHotelId(storedHotelId);
+      const hotelExists = storedHotelId
+        ? myHotels.some((item) => item.hotel._id === storedHotelId)
+        : false;
+
+      if (!hotelExists) {
+        storedHotelId = myHotels[0]?.hotel._id ?? null;
+
+        if (storedHotelId) {
+          setCurrentHotelId(storedHotelId);
+        }
       }
 
       if (!storedHotelId) {
         setHotel(null);
         setMembership(null);
         setHotelIdState(null);
+        setIsBootstrapped(true);
         return;
       }
 
       setHotelIdState(storedHotelId);
 
-      const current = await getCurrentHotel();
-      setHotel(current.hotel);
-      setMembership(current.membership);
-    } catch {
-      clearHotel();
+      const applied = await loadCurrentHotel(requestId);
+      if (!applied) return;
+
+      setIsBootstrapped(true);
+    } catch (error) {
+      if (requestId !== activeRequestIdRef.current) return;
+      console.error("Failed to refresh hotel context:", error);
+      setHotel(null);
+      setMembership(null);
+      setHotelIdState(null);
+      setIsBootstrapped(true);
     } finally {
-      setIsLoading(false);
+      if (requestId === activeRequestIdRef.current) {
+        setIsLoading(false);
+      }
     }
-  }, [isAuthenticated, clearHotel]);
+  }, [isAuthenticated, isAuthLoading, clearHotel, loadCurrentHotel]);
 
   useEffect(() => {
-    if (isAuthLoading) return;
     void refreshHotel();
-  }, [isAuthLoading, refreshHotel]);
+  }, [refreshHotel]);
 
-  const setHotelId = useCallback(
-    async (nextHotelId: string | null) => {
-      if (!nextHotelId) {
-        clearHotel();
-        return;
-      }
+  const setHotelId = useCallback(async (nextHotelId: string | null) => {
+    if (!nextHotelId) {
+      removeCurrentHotelId();
+      setHotel(null);
+      setMembership(null);
+      setHotelIdState(null);
+      return;
+    }
+
+    const requestId = ++activeRequestIdRef.current;
+    const previousHotelId = hotelId;
+
+    try {
+      setIsLoading(true);
 
       setCurrentHotelId(nextHotelId);
       setHotelIdState(nextHotelId);
-      await refreshHotel();
-    },
-    [clearHotel, refreshHotel],
-  );
+
+      const applied = await loadCurrentHotel(requestId);
+      if (!applied) return;
+    } catch (error) {
+      console.error("Failed to switch hotel:", error);
+
+      if (previousHotelId) {
+        setCurrentHotelId(previousHotelId);
+        setHotelIdState(previousHotelId);
+      } else {
+        removeCurrentHotelId();
+        setHotelIdState(null);
+      }
+    } finally {
+      if (requestId === activeRequestIdRef.current) {
+        setIsLoading(false);
+      }
+    }
+  }, [hotelId, loadCurrentHotel]);
 
   const value = useMemo<HotelContextValue>(
     () => ({
@@ -116,12 +178,27 @@ export function HotelProvider({ children }: HotelProviderProps) {
       hotelId,
       availableHotels,
       isLoading,
+      isBootstrapped,
       setHotelId,
       refreshHotel,
       clearHotel,
     }),
-    [hotel, membership, hotelId, availableHotels, isLoading, setHotelId, refreshHotel, clearHotel],
+    [
+      hotel,
+      membership,
+      hotelId,
+      availableHotels,
+      isLoading,
+      isBootstrapped,
+      setHotelId,
+      refreshHotel,
+      clearHotel,
+    ],
   );
 
-  return <HotelContext.Provider value={value}>{children}</HotelContext.Provider>;
+  return (
+    <HotelContext.Provider value={value}>
+      {children}
+    </HotelContext.Provider>
+  );
 }
