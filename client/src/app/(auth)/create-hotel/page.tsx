@@ -4,23 +4,16 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CreateHotelForm } from "@/components/auth/create-hotel-form";
 import { useAuth } from "@/hooks/use-auth";
-import { useHotel } from "@/hooks/use-hotel";
 
 export default function CreateHotelPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
-  const { hotelId } = useHotel();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.replace("/login");
-      return;
     }
-
-    if (!isLoading && isAuthenticated && hotelId) {
-      router.replace("/dashboard");
-    }
-  }, [isAuthenticated, isLoading, hotelId, router]);
+  }, [isAuthenticated, isLoading, router]);
 
   if (isLoading) {
     return (
@@ -41,7 +34,7 @@ export default function CreateHotelPage() {
           <p className="text-sm font-medium text-slate-500">Hotel SaaS PMS</p>
           <h1 className="mt-2 text-2xl font-bold text-slate-900">Create Hotel</h1>
           <p className="mt-2 text-sm text-slate-600">
-            Set up your first hotel workspace to start using the dashboard.
+            Create a new hotel workspace and add it to your account.
           </p>
         </div>
 

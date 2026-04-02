@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useHotel } from "@/hooks/use-hotel";
+import Link from "next/link";
 
 type TopbarProps = {
   onOpenSidebar: () => void;
@@ -17,7 +18,7 @@ export function Topbar({ onOpenSidebar }: TopbarProps) {
     logout();
     router.replace("/login");
   }
-
+  console.log("Topbar user:", user);
   return (
     <header className="flex min-h-16 items-center justify-between border-b border-slate-200 bg-white px-4 lg:px-6">
       <div className="flex items-center gap-3">
@@ -38,11 +39,16 @@ export function Topbar({ onOpenSidebar }: TopbarProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-center gap-3">
         <div className="hidden rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-600 sm:block">
           {user?.fullName ?? "Authenticated User"}
         </div>
 
+    {user?.role === "hotel_owner" && (
+        <Link href={'/create-hotel'} className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100">
+          Add Hotel
+        </Link>
+    )}
         <button
           onClick={handleLogout}
           className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
