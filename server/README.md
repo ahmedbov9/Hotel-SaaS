@@ -102,7 +102,7 @@ After authentication, the backend verifies that the user has an active membershi
 
 ## API Base URLs
 
-- API base: `http://localhost:5001/api`
+- API base: `http://localhost:5002/api`
 - Postman collection: [Open in Postman](https://web.postman.co/workspace/Personal-Workspace~a870e76e-3cd7-4c5d-908b-c46b5b5486e9/collection/36195232-25ac54ba-ed26-4d2a-8c6e-861045f87ff4?action=share&source=copy-link&creator=36195232)
 
 ## Main Route Groups
@@ -170,7 +170,7 @@ JWT_ACCESS_EXPIRES=2d
 | Variable | Required | Description |
 | --- | --- | --- |
 | `NODE_ENV` | No | Runtime mode. Defaults to `development`. |
-| `PORT` | No | API port. Defaults to `5001`. |
+| `PORT` | No | API port. Defaults to `5002`. |
 | `MONGO_URI` | Yes | MongoDB connection string. |
 | `CLIENT_URL` | No | Allowed frontend origin for CORS. |
 | `JWT_ACCESS_SECRET` | Yes | Secret used to sign and verify access tokens. |
