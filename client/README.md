@@ -368,7 +368,7 @@ npm install
 Create a `.env.local` file in the project root:
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api/v1
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
 ```
 
 ### 4. Run the development server
